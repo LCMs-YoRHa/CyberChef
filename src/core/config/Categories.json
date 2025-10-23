@@ -100,6 +100,7 @@
             "RC2 Encrypt",
             "DNA Encode",
             "DNA Decode",
+            "Values Encoding",
             "RC2 Decrypt",
             "RC4",
             "RC4 Drop",
