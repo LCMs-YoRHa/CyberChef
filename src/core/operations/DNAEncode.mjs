@@ -18,20 +18,20 @@ class DNAEncode extends Operation {
 
         this.name = "DNA Encode";
         this.module = "Default";
-        this.description = "将文本编码为DNA序列（A、T、C、G）。每个ASCII字符映射到四个核苷酸。";
+        this.description = "将文本编码为DNA序列（A、T、C、G）。根据特定的字符到DNA密码子映射规则进行编码。";
         this.infoURL = "https://en.wikipedia.org/wiki/DNA_and_RNA_codon_tables";
         this.inputType = "string";
         this.outputType = "string";
         this.args = [
             {
-                "name": "映射方案",
+                "name": "输出类型",
                 "type": "option",
-                "value": ["标准映射 (0=AT, 1=CG)", "替代映射 (0=AC, 1=GT)"]
+                "value": ["DNA序列", "二进制字符串"]
             },
             {
                 "name": "分隔符",
                 "type": "option",
-                "value": ["无分隔符", "空格分隔", "逗号分隔", "每4个字符加空格"]
+                "value": ["无分隔符", "空格分隔密码子", "逗号分隔密码子"]
             }
         ];
     }
@@ -42,40 +42,69 @@ class DNAEncode extends Operation {
      * @returns {string}
      */
     run(input, args) {
-        const [mappingScheme, separator] = args;
-        let output = "";
+        const [outputType, separator] = args;
         
-        // 根据选择的映射方案创建二进制到DNA的映射
-        let bitToDna = [];
-        if (mappingScheme === "标准映射 (0=AT, 1=CG)") {
-            bitToDna = { "0": ["A", "T"], "1": ["C", "G"] };
-        } else {
-            bitToDna = { "0": ["A", "C"], "1": ["G", "T"] };
-        }
+        // 定义映射规则（从解码的mapping反向创建）
+        const mapping = {
+            'a': 'AAA', 'b': 'AAC', 'c': 'AAG', 'd': 'AAT',
+            'e': 'ACA', 'f': 'ACC', 'g': 'ACG', 'h': 'ACT',
+            'i': 'AGA', 'j': 'AGC', 'k': 'AGG', 'l': 'AGT',
+            'm': 'ATA', 'n': 'ATC', 'o': 'ATG', 'p': 'ATT',
+            'q': 'CAA', 'r': 'CAC', 's': 'CAG', 't': 'CAT',
+            'u': 'CCA', 'v': 'CCC', 'w': 'CCG', 'x': 'CCT',
+            'y': 'CGA', 'z': 'CGC', 'A': 'CGG', 'B': 'CGT',
+            'C': 'CTA', 'D': 'CTC', 'E': 'CTG', 'F': 'CTT',
+            'G': 'GAA', 'H': 'GAC', 'I': 'GAG', 'J': 'GAT',
+            'K': 'GCA', 'L': 'GCC', 'M': 'GCG', 'N': 'GCT',
+            'O': 'GGA', 'P': 'GGC', 'Q': 'GGG', 'R': 'GGT',
+            'S': 'GTA', 'T': 'GTC', 'U': 'GTG', 'V': 'GTT',
+            'W': 'TAA', 'X': 'TAC', 'Y': 'TAG', 'Z': 'TAT',
+            '1': 'TCA', '2': 'TCC', '3': 'TCG', '4': 'TCT',
+            '5': 'TGA', '6': 'TGC', '7': 'TGG', '8': 'TGT',
+            '9': 'TTA', '0': 'TTC', ' ': 'TTG', '.': 'TTT'
+        };
         
-        // 将每个字符转换为8位二进制，然后映射到DNA序列
+        // DNA到二进制的映射
+        const dna_to_bin = {
+            'A': '00',
+            'C': '10',
+            'G': '01',
+            'T': '11'
+        };
+        
+        let dnaOutput = "";
+        
+        // 将输入文本转换为DNA序列
         for (let i = 0; i < input.length; i++) {
-            const charCode = input.charCodeAt(i);
-            const binary = charCode.toString(2).padStart(8, "0");
-            
-            for (let j = 0; j < binary.length; j++) {
-                const bit = binary[j];
-                // 随机选择映射方案中的一个碱基（增加生物学真实性）
-                const randomChoice = Math.floor(Math.random() * 2);
-                output += bitToDna[bit][randomChoice];
+            const char = input[i];
+            if (mapping[char]) {
+                dnaOutput += mapping[char];
+            } else {
+                // 对于不在映射表中的字符，可以选择跳过或抛出错误
+                // 这里选择跳过并记录一个警告
+                console.warn(`字符 '${char}' 不在映射表中，已跳过`);
             }
         }
         
+        // 根据输出类型处理结果
+        let output = "";
+        if (outputType === "二进制字符串") {
+            // 将DNA序列转换为二进制字符串
+            for (let i = 0; i < dnaOutput.length; i++) {
+                output += dna_to_bin[dnaOutput[i]];
+            }
+        } else {
+            // 直接使用DNA序列
+            output = dnaOutput;
+        }
+        
         // 应用分隔符
-        if (separator === "空格分隔") {
-            // 每2个字符加一个空格（表示一个bit对）
-            output = output.replace(/.{2}/g, "$& ").trim();
-        } else if (separator === "逗号分隔") {
-            // 每2个字符加一个逗号
-            output = output.replace(/.{2}/g, "$&,").slice(0, -1);
-        } else if (separator === "每4个字符加空格") {
-            // 每4个字符加一个空格（表示一个byte）
-            output = output.replace(/.{4}/g, "$& ").trim();
+        if (separator === "空格分隔密码子") {
+            // 每3个字符加一个空格（表示一个密码子）
+            output = output.replace(/.{3}/g, "$& ").trim();
+        } else if (separator === "逗号分隔密码子") {
+            // 每3个字符加一个逗号
+            output = output.replace(/.{3}/g, "$&,").slice(0, -1);
         }
         
         return output;
