@@ -18,20 +18,15 @@ class DNAEncode extends Operation {
 
         this.name = "DNA Encode";
         this.module = "Default";
-        this.description = "将文本编码为DNA序列（A、T、C、G）。根据特定的字符到DNA密码子映射规则进行编码。";
+        this.description = "Encodes text to DNA sequences using a specific character to DNA codon mapping.";
         this.infoURL = "https://en.wikipedia.org/wiki/DNA_and_RNA_codon_tables";
         this.inputType = "string";
         this.outputType = "string";
         this.args = [
             {
-                "name": "输出类型",
+                "name": "Delimiter",
                 "type": "option",
-                "value": ["DNA序列", "二进制字符串"]
-            },
-            {
-                "name": "分隔符",
-                "type": "option",
-                "value": ["无分隔符", "空格分隔密码子", "逗号分隔密码子"]
+                "value": ["None", "Space", "Comma", "Semicolon", "Colon"]
             }
         ];
     }
@@ -42,9 +37,9 @@ class DNAEncode extends Operation {
      * @returns {string}
      */
     run(input, args) {
-        const [outputType, separator] = args;
+        const [delimiter] = args;
         
-        // 定义映射规则（从解码的mapping反向创建）
+        // Create character to DNA codon mapping
         const mapping = {
             'a': 'AAA', 'b': 'AAC', 'c': 'AAG', 'd': 'AAT',
             'e': 'ACA', 'f': 'ACC', 'g': 'ACG', 'h': 'ACT',
@@ -64,50 +59,37 @@ class DNAEncode extends Operation {
             '9': 'TTA', '0': 'TTC', ' ': 'TTG', '.': 'TTT'
         };
         
-        // DNA到二进制的映射
-        const dna_to_bin = {
-            'A': '00',
-            'C': '10',
-            'G': '01',
-            'T': '11'
-        };
+        // Select delimiter
+        let delimiterStr = "";
+        switch (delimiter) {
+            case "Space":
+                delimiterStr = " ";
+                break;
+            case "Comma":
+                delimiterStr = ",";
+                break;
+            case "Semicolon":
+                delimiterStr = ";";
+                break;
+            case "Colon":
+                delimiterStr = ":";
+                break;
+        }
         
-        let dnaOutput = "";
-        
-        // 将输入文本转换为DNA序列
+        // Encode process
+        let result = [];
         for (let i = 0; i < input.length; i++) {
             const char = input[i];
             if (mapping[char]) {
-                dnaOutput += mapping[char];
+                result.push(mapping[char]);
             } else {
-                // 对于不在映射表中的字符，可以选择跳过或抛出错误
-                // 这里选择跳过并记录一个警告
-                console.warn(`字符 '${char}' 不在映射表中，已跳过`);
+                // Throw error if character is not in mapping table
+                throw new Error(`Cannot encode character: ${char}, it is not in the mapping table.`);
             }
         }
         
-        // 根据输出类型处理结果
-        let output = "";
-        if (outputType === "二进制字符串") {
-            // 将DNA序列转换为二进制字符串
-            for (let i = 0; i < dnaOutput.length; i++) {
-                output += dna_to_bin[dnaOutput[i]];
-            }
-        } else {
-            // 直接使用DNA序列
-            output = dnaOutput;
-        }
-        
-        // 应用分隔符
-        if (separator === "空格分隔密码子") {
-            // 每3个字符加一个空格（表示一个密码子）
-            output = output.replace(/.{3}/g, "$& ").trim();
-        } else if (separator === "逗号分隔密码子") {
-            // 每3个字符加一个逗号
-            output = output.replace(/.{3}/g, "$&,").slice(0, -1);
-        }
-        
-        return output;
+        // Return DNA sequence with optional delimiter
+        return result.join(delimiterStr);
     }
 }
 
