@@ -32,41 +32,41 @@ class CoreValuesDecode extends Operation {
      */
     run(input, args) {
         // Core Socialist Values
-        const values = '富强民主文明和谐自由平等公正法治爱国敬业诚信友善';
-        
+        const values = "富强民主文明和谐自由平等公正法治爱国敬业诚信友善";
+
         return this.valuesDecode(input, values);
     }
-    
+
     /**
      * Converts UTF-8 hex representation back to string
      */
     utf82str(utfs) {
-        if (typeof utfs !== 'string') {
-            throw new Error('Input must be a string');
+        if (typeof utfs !== "string") {
+            throw new Error("Input must be a string");
         }
-        
+
         const l = utfs.length;
-        
+
         if ((l & 1) !== 0) {
-            throw new Error('Input length must be even');
+            throw new Error("Input length must be even");
         }
-        
+
         const splited = [];
-        
+
         for (let i = 0; i < l; i++) {
             if ((i & 1) === 0) {
-                splited.push('%');
+                splited.push("%");
             }
             splited.push(utfs[i]);
         }
-        
+
         try {
-            return decodeURIComponent(splited.join(''));
+            return decodeURIComponent(splited.join(""));
         } catch (e) {
-            throw new Error('Error during decoding: ' + e.message);
+            throw new Error("Error during decoding: " + e.message);
         }
     }
-    
+
     /**
      * Converts duodecimal array to hex string
      */
@@ -74,7 +74,7 @@ class CoreValuesDecode extends Operation {
         const hex = [];
         const l = duo.length;
         let i = 0;
-        
+
         while (i < l) {
             if (duo[i] < 10) {
                 hex.push(duo[i]);
@@ -89,29 +89,29 @@ class CoreValuesDecode extends Operation {
             }
             i++;
         }
-        return hex.map(v => v.toString(16).toUpperCase()).join('');
+        return hex.map(v => v.toString(16).toUpperCase()).join("");
     }
-    
+
     /**
      * Values decoding
      */
     valuesDecode(encoded, values) {
         const duo = [];
-        
-        for (let c of encoded) {
+
+        for (const c of encoded) {
             const i = values.indexOf(c);
             if (i !== -1 && (i & 1) === 0) {
                 // i is even
                 duo.push(i >> 1);
             }
         }
-        
+
         const hexs = this.duo2hex(duo);
-        
+
         if ((hexs.length & 1) !== 0) {
-            throw new Error('Decoded hex length must be even');
+            throw new Error("Decoded hex length must be even");
         }
-        
+
         return this.utf82str(hexs);
     }
 }

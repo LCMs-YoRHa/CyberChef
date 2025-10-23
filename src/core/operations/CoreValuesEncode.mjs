@@ -32,36 +32,36 @@ class CoreValuesEncode extends Operation {
      */
     run(input, args) {
         // Core Socialist Values
-        const values = '富强民主文明和谐自由平等公正法治爱国敬业诚信友善';
-        
+        const values = "富强民主文明和谐自由平等公正法治爱国敬业诚信友善";
+
         return this.valuesEncode(input, values);
     }
-    
+
     /**
      * Converts string to UTF-8 hex representation
      */
     str2utf8(str) {
-        const notEncoded = /[A-Za-z0-9\-\_\.\!\~\*\'\(\)]/g;
+        const notEncoded = /[A-Za-z0-9_!.~*'()]/g;
         const str1 = str.replace(notEncoded, c => c.codePointAt(0).toString(16));
-        let str2 = encodeURIComponent(str1);
-        const concated = str2.replace(/%/g, '').toUpperCase();
+        const str2 = encodeURIComponent(str1);
+        const concated = str2.replace(/%/g, "").toUpperCase();
         return concated;
     }
-    
+
     /**
      * Generates random binary value
      */
     randBin() {
         return Math.random() >= 0.5;
     }
-    
+
     /**
      * Converts hex to duodecimal array
      */
     hex2duo(hexs) {
         const duo = [];
-        
-        for (let c of hexs) {
+
+        for (const c of hexs) {
             const n = Number.parseInt(c, 16);
             if (n < 10) {
                 duo.push(n);
@@ -77,14 +77,14 @@ class CoreValuesEncode extends Operation {
         }
         return duo;
     }
-    
+
     /**
      * Converts duodecimal array to values string
      */
     duo2values(duo, values) {
-        return duo.map(d => values[2*d] + values[2*d+1]).join('');
+        return duo.map(d => values[2*d] + values[2*d+1]).join("");
     }
-    
+
     /**
      * Values encoding
      */

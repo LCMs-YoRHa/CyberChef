@@ -38,27 +38,27 @@ class DNAEncode extends Operation {
      */
     run(input, args) {
         const [delimiter] = args;
-        
+
         // Create character to DNA codon mapping
         const mapping = {
-            'a': 'AAA', 'b': 'AAC', 'c': 'AAG', 'd': 'AAT',
-            'e': 'ACA', 'f': 'ACC', 'g': 'ACG', 'h': 'ACT',
-            'i': 'AGA', 'j': 'AGC', 'k': 'AGG', 'l': 'AGT',
-            'm': 'ATA', 'n': 'ATC', 'o': 'ATG', 'p': 'ATT',
-            'q': 'CAA', 'r': 'CAC', 's': 'CAG', 't': 'CAT',
-            'u': 'CCA', 'v': 'CCC', 'w': 'CCG', 'x': 'CCT',
-            'y': 'CGA', 'z': 'CGC', 'A': 'CGG', 'B': 'CGT',
-            'C': 'CTA', 'D': 'CTC', 'E': 'CTG', 'F': 'CTT',
-            'G': 'GAA', 'H': 'GAC', 'I': 'GAG', 'J': 'GAT',
-            'K': 'GCA', 'L': 'GCC', 'M': 'GCG', 'N': 'GCT',
-            'O': 'GGA', 'P': 'GGC', 'Q': 'GGG', 'R': 'GGT',
-            'S': 'GTA', 'T': 'GTC', 'U': 'GTG', 'V': 'GTT',
-            'W': 'TAA', 'X': 'TAC', 'Y': 'TAG', 'Z': 'TAT',
-            '1': 'TCA', '2': 'TCC', '3': 'TCG', '4': 'TCT',
-            '5': 'TGA', '6': 'TGC', '7': 'TGG', '8': 'TGT',
-            '9': 'TTA', '0': 'TTC', ' ': 'TTG', '.': 'TTT'
+            "a": "AAA", "b": "AAC", "c": "AAG", "d": "AAT",
+            "e": "ACA", "f": "ACC", "g": "ACG", "h": "ACT",
+            "i": "AGA", "j": "AGC", "k": "AGG", "l": "AGT",
+            "m": "ATA", "n": "ATC", "o": "ATG", "p": "ATT",
+            "q": "CAA", "r": "CAC", "s": "CAG", "t": "CAT",
+            "u": "CCA", "v": "CCC", "w": "CCG", "x": "CCT",
+            "y": "CGA", "z": "CGC", "A": "CGG", "B": "CGT",
+            "C": "CTA", "D": "CTC", "E": "CTG", "F": "CTT",
+            "G": "GAA", "H": "GAC", "I": "GAG", "J": "GAT",
+            "K": "GCA", "L": "GCC", "M": "GCG", "N": "GCT",
+            "O": "GGA", "P": "GGC", "Q": "GGG", "R": "GGT",
+            "S": "GTA", "T": "GTC", "U": "GTG", "V": "GTT",
+            "W": "TAA", "X": "TAC", "Y": "TAG", "Z": "TAT",
+            "1": "TCA", "2": "TCC", "3": "TCG", "4": "TCT",
+            "5": "TGA", "6": "TGC", "7": "TGG", "8": "TGT",
+            "9": "TTA", "0": "TTC", " ": "TTG", ".": "TTT"
         };
-        
+
         // Select delimiter
         let delimiterStr = "";
         switch (delimiter) {
@@ -75,9 +75,9 @@ class DNAEncode extends Operation {
                 delimiterStr = ":";
                 break;
         }
-        
+
         // Encode process
-        let result = [];
+        const result = [];
         for (let i = 0; i < input.length; i++) {
             const char = input[i];
             if (mapping[char]) {
@@ -87,7 +87,7 @@ class DNAEncode extends Operation {
                 throw new Error(`Cannot encode character: ${char}, it is not in the mapping table.`);
             }
         }
-        
+
         // Return DNA sequence with optional delimiter
         return result.join(delimiterStr);
     }
