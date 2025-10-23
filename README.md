@@ -5,6 +5,25 @@
 [![](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/gchq/CyberChef/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/gchq/CyberChef.svg)](https://gitter.im/gchq/CyberChef?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+## 开发说明
+
+考虑到校赛采用**离线（不出网）**环境，选手将无法使用在线解码网站。同时，为保证比赛的挑战性，我们也不会提供功能过于强大或指向性过强（“造轮子”）的本地工具。
+
+这一设定保留了“猜测编码类型”的核心考察点，但也带来了一个棘手的实际问题：对于赛题中涉及的某些特殊编码，选手几乎不可能有现成的本地工具去解码。
+
+这使我陷入了一个两难的境地：
+
+1. 如果我不提供任何工具，选手将因无法解码而卡关，偏离了考察本意。
+
+2. 但如果我开发专用的本地解码工具（例如 decode_xxx.exe），工具的针对性就过强，选手无需思考分析，直接使用即可。这等于直接告知了答案，“猜测编码”这一考察点将名存实亡。
+
+为了完美平衡挑战性与可行性，我找到了一个理想的解决方案。鉴于比赛本就提供CyberChef作为解码工具，其内置的百余种标准解码操作，天然构成了极佳的“混淆项”。
+
+因此，我根据赛题设计，定向开发了部分官方库未包含、但解题所必需的自定义解码操作，并将它们作为新模块集成到了CyberChef的操作列表中。
+
+这样，选手仍需自行分析、识别编码类型，并在CyberChef的众多操作中找出正确的那一个（无论是内置的还是我新增的），既保证了解题的可行性，也最大程度地保留了比赛的核心挑战。
+
+下方为CyberChef原始README.md内容：
 
 #### *The Cyber Swiss Army Knife*
 
